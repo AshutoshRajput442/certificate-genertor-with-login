@@ -1,0 +1,133 @@
+CREATE DATABASE studentdb;
+USE studentdb;
+CREATE TABLE students (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
+select * from students;
+
+
+-- Insert a sample user (password: "password123")
+INSERT INTO students (email, password) VALUES 
+("ashu@gmail.com", "1111"); 
+-- (Hashed password: bcrypt hashed)
+
+
+
+
+
+
+
+
+
+CREATE DATABASE studentdb;
+
+USE studentdb;
+
+CREATE TABLE students (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE courses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE selected_courses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT,
+    course_id INT,
+    FOREIGN KEY (student_id) REFERENCES students(id),
+    FOREIGN KEY (course_id) REFERENCES courses(id)
+);
+
+CREATE TABLE certificates (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT,
+    course_id INT,
+    certificate_url VARCHAR(255),
+    FOREIGN KEY (student_id) REFERENCES students(id),
+    FOREIGN KEY (course_id) REFERENCES courses(id)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE DATABASE studentdb;
+USE studentdb;
+CREATE TABLE students (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
+select * from students;
+
+
+-- Insert a sample user (password: "password123")
+INSERT INTO students (email, password) VALUES 
+("ashu@gmail.com", "1111"); 
+-- (Hashed password: bcrypt hashed)
+
+
+CREATE TABLE courses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+INSERT INTO courses (name) VALUES
+('Web Development'),
+('Machine Learning'),
+('Data Science'),
+('Cyber Security'),
+('Cloud Computing'),
+('Blockchain Technology'),
+('Digital Marketing'),
+('UI/UX Design'),
+('Android Development'),
+('Artificial Intelligence');
+select * from courses;
+
+
+
+
+
+
+
+CREATE TABLE selected_courses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT,
+    course_id INT,
+    FOREIGN KEY (student_id) REFERENCES students(id),
+    FOREIGN KEY (course_id) REFERENCES courses(id)
+);
+
+INSERT INTO selected_courses (student_id, course_id) VALUES
+(8, 2),
+(8, 5),
+(8, 8);
+SELECT * FROM selected_courses WHERE student_id= 7;
+
+
+select * from selected_courses;
+
+
+CREATE TABLE certificates (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT,
+    course_id INT,
+    certificate_url VARCHAR(255),
+    FOREIGN KEY (student_id) REFERENCES students(id),
+    FOREIGN KEY (course_id) REFERENCES courses(id)
+);
+select * from certificates;
