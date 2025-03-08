@@ -204,33 +204,9 @@ func GetSelectedCourses(c *gin.Context) {
 	c.JSON(http.StatusOK, selectedCourses)
 }
 
-// func generateCertificate(c *gin.Context) {
-// 	var cert Certificate
-// 	if err := c.ShouldBindJSON(&cert); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-// 		return
-// 	}
-
-// 	cert.PDFPath = fmt.Sprintf("certificates/student_%d_course_%d.pdf", cert.StudentID, cert.CourseID)
-
-// 	_, err := db.Exec("INSERT INTO certificates (student_id, course_id, pdf_path) VALUES (?, ?, ?)", cert.StudentID, cert.CourseID, cert.PDFPath)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error saving certificate"})
-// 		return
-// 	}
-
-// 	c.JSON(http.StatusOK, gin.H{"message": "Certificate generated successfully", "pdf_path": cert.PDFPath})
-// }
-
 func main() {
 	connectDB()
 	router := gin.Default()
-
-	// Create a Gin router
-	// router := gin.Default()
-
-	// Enable CORS for frontend (http://localhost:5173)
-	// router.Use(cors.Default())
 
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173"},
@@ -243,7 +219,7 @@ func main() {
 	router.POST("/login", login)
 	router.GET("/courses", getCourses)
 	router.POST("/select-course", SelectCourse)
-	// router.GET("/selected-courses/:student_id", GetSelectedCourses)
+	router.GET("/selected-courses/:student_id", GetSelectedCourses)
 	// http.HandleFunc("/select-course", SelectCourse)
 	// router.POST("/generate-certificate", generateCertificate)
 
