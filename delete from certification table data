@@ -1,0 +1,129 @@
+
+i dont wnat runcleanup after 10 minytes i wnat when a user delete manually 
+ChatGPT said:
+If you want the cleanup process to trigger immediately when a user manually deletes a file from the uploads folder, you need a file watcher that detects file deletions in real time and updates the database accordingly.
+
+✅ Solution: Use fsnotify to Watch for File Deletions
+This will automatically delete the certificate record from the MySQL certificates table the moment a file is deleted manually.
+
+🔹 Install fsnotify Package (If Not Installed)
+Run this in your terminal:
+
+sh
+Copy
+Edit
+go get github.com/fsnotify/fsnotify
+🔹 Updated Go Code with Real-Time File Watcher
+go
+Copy
+Edit
+package main
+
+import (
+	"database/sql"
+	"fmt"
+	"log"
+	"os"
+	"path/filepath"
+
+	"github.com/fsnotify/fsnotify"
+	_ "github.com/go-sql-driver/mysql"
+)
+
+// Initialize database connection
+var db *sql.DB
+
+func main() {
+	// Connect to MySQL database
+	var err error
+	db, err = sql.Open("mysql", "root:password@tcp(localhost:3306)/studentdb")
+	if err != nil {
+		log.Fatal("Database connection failed:", err)
+	}
+	defer db.Close()
+
+	// Start watching the "uploads" folder for file deletions
+	watchUploadsFolder()
+}
+
+// ✅ Function to watch the "uploads" folder for deleted files
+func watchUploadsFolder() {
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		log.Fatal("Error creating file watcher:", err)
+	}
+	defer watcher.Close()
+
+	uploadsDir := "uploads"
+
+	// Add uploads folder to watcher
+	err = watcher.Add(uploadsDir)
+	if err != nil {
+		log.Fatal("Error watching uploads folder:", err)
+	}
+
+	log.Println("Watching for file deletions in:", uploadsDir)
+
+	for {
+		select {
+		case event, ok := <-watcher.Events:
+			if !ok {
+				return
+			}
+
+			// If file is removed
+			if event.Op&fsnotify.Remove == fsnotify.Remove {
+				log.Println("File deleted:", event.Name)
+				removeCertificateFromDB(event.Name)
+			}
+
+		case err, ok := <-watcher.Errors:
+			if !ok {
+				return
+			}
+			log.Println("File watcher error:", err)
+		}
+	}
+}
+
+// ✅ Function to remove certificate entry from the database
+func removeCertificateFromDB(filePath string) {
+	// Get the file name only (remove path prefix)
+	fileName := filepath.Base(filePath)
+
+	// Delete the certificate record from the database
+	result, err := db.Exec("DELETE FROM certificates WHERE certificate_url LIKE ?", "%"+fileName)
+	if err != nil {
+		log.Println("Error deleting certificate from database:", err)
+		return
+	}
+
+	// Check how many rows were affected
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected > 0 {
+		log.Println("Deleted certificate record for:", fileName)
+
+		// ✅ Rearrange IDs to be sequential
+		_, err := db.Exec(`
+			SET @num := 0;
+			UPDATE certificates SET id = @num := @num + 1;
+			ALTER TABLE certificates AUTO_INCREMENT = 1;
+		`)
+		if err != nil {
+			log.Println("Error rearranging certificate IDs:", err)
+		} else {
+			log.Println("Certificate IDs rearranged sequentially")
+		}
+	} else {
+		log.Println("No matching database record found for:", fileName)
+	}
+}
+🔹 🛠 How This Works:
+Watches the uploads folder for real-time file deletions.
+When a user manually deletes a PDF, it instantly removes the corresponding record from MySQL.
+Keeps certificate IDs sequential (no gaps in numbering).
+Runs continuously as part of the Go backend.
+🚀 Now, whenever a PDF is deleted manually, the database is updated automatically!
+No need to run cleanup functions periodically. 🎯
+
+Let me know if you need any modifications! 😊

@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import "./courselist.css";
 
 const CourseList = () => {
-  const [courses, setCourses] = useState([]);
-  const [message, setMessage] = useState("");
+  const [courses, setCourses] = useState([]); 
+  const [message, setMessage] = useState(""); 
   const navigate = useNavigate();
 
   // Retrieve logged-in student ID (Replace with actual auth logic)
