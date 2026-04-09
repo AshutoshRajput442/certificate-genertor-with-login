@@ -14,9 +14,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/joho/godotenv"
-	"golang.org/x/crypto/bcrypt"
-
 	"github.com/jung-kurt/gofpdf"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Student struct {
@@ -220,8 +219,8 @@ func main() {
 	}))
 
 	// Routes
-	router.POST("/signup", signup)
 	router.POST("/login", login)
+	router.POST("/signup", signup)
 	router.GET("/courses", getCourses)
 	router.POST("/select-course", SelectCourse)
 	router.GET("/selected-courses/:student_id", GetSelectedCourses)
@@ -240,10 +239,10 @@ func generateCertificate(c *gin.Context) {
 	courseID := c.Param("course_id")
 
 	// Fetch student name and course name
-	query := `SELECT students.email, courses.name 
-			FROM students 
-			JOIN selected_courses ON students.id = selected_courses.student_id 
-			JOIN courses ON courses.id = selected_courses.course_id 
+	query := `SELECT students.email, courses.name
+			FROM students
+			JOIN selected_courses ON students.id = selected_courses.student_id
+			JOIN courses ON courses.id = selected_courses.course_id
 			WHERE students.id = ? AND courses.id = ?`
 
 	var studentEmail, courseName string
